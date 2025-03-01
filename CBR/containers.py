@@ -1,6 +1,6 @@
 from .CaseBase import CaseBase, Case
 from abc import ABC, abstractmethod
-from typing import Set, Any, Dict, Optional
+from typing import List, Any, Dict, Optional
 
 
 class Retrieval(ABC):
@@ -8,7 +8,7 @@ class Retrieval(ABC):
         self.parameters = parameters
 
     @abstractmethod
-    def retrieve(self, CB: CaseBase, K: Optional[int] = None) -> Set[Case]:
+    def retrieve(self, CB: CaseBase, K: Optional[int] = None) -> List[Case]:
         pass
     
     
@@ -17,5 +17,5 @@ class Adaptation(ABC):
         self.parameters = parameters
 
     @abstractmethod
-    def adapt(self, cases: Set[Case], problem: Any) -> Case:
+    def adapt(self, cases: List[Case], problem: Any) -> Any:
         pass
