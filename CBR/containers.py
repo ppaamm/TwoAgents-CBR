@@ -8,7 +8,7 @@ class Retrieval(ABC):
         self.parameters = parameters
 
     @abstractmethod
-    def retrieve(self, CB: CaseBase, K: Optional[int] = None) -> List[Case]:
+    def retrieve(self, target_problem: Any, CB: CaseBase, K: Optional[int] = None) -> List[Case]:
         pass
     
     

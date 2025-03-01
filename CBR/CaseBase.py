@@ -26,7 +26,6 @@ class CaseBase:
     def add_case(self, problem: Any, solution: Any) -> Case:
         case = Case(problem, solution)
         self.cases.add(case)
-        return case
 
     def remove_case(self, case_id: uuid.UUID):
         self.cases = {case for case in self.cases if case.id != case_id}
