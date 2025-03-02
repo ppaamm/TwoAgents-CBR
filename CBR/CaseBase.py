@@ -22,6 +22,9 @@ class Case:
 class CaseBase:
     def __init__(self):
         self.cases: Set[Case] = set()
+        
+    def __len__(self):
+        return len(self.cases)
 
     def add_case(self, problem: Any, solution: Any) -> Case:
         case = Case(problem, solution)
