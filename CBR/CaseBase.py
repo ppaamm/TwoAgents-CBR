@@ -1,4 +1,4 @@
-from typing import Set, Any
+from typing import Set, Any, List
 import uuid
 
 class Case:
@@ -35,3 +35,6 @@ class CaseBase:
 
     def get_all_cases(self) -> Set[Case]:
         return self.cases
+    
+    def get_all_cases_as_list(self) -> List[Case]:
+        return list(self.cases)

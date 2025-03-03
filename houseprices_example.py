@@ -23,6 +23,8 @@ y = df["Price"]
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
+y = y.to_numpy()
+
 # Split data (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -35,8 +37,8 @@ N = 100
 # y_test = y_test.to_numpy()
 
 X_train = X_train[:N, :]
-y_train = y_train.to_numpy()[:N]
-y_test = y_test.to_numpy()
+y_train = y_train[:N]
+
 
 
 # Defining the adaptation method
@@ -57,11 +59,8 @@ dir_ret = DirectingRetrieval(dir_ret_parameters)
 
 # Creating the case base:
 
-CB = NumericalCaseBase((8,), (1,))
-for i in range(len(y_train)):
-    CB.add_case(X_train[i,:], np.array([y_train[i]]))
-
-CB_list = list(CB.get_all_cases())
+CB = NumericalCaseBase.from_numpy(X_train, y_train)
+CB_list = CB.get_all_cases_as_list()
 
 
 # Retrieval
