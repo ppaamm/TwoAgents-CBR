@@ -32,7 +32,7 @@ def naive_text_distance(t1, t2):
 VH_adaptation = VowelHarmonyAdaptation({"knows_harmony": False})
 
 
-dir_ret_parameters = { "distance": naive_text_distance, 
+dir_ret_parameters = { "loss": naive_text_distance, 
                        "adaptation": VH_adaptation}
 
 dir_ret = DirectingRetrieval(dir_ret_parameters)

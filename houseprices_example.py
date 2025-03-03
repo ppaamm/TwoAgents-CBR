@@ -49,7 +49,7 @@ w_adaptation = WeightedAdaptation({"weight": weight})
 def quadratic_distance(x1, x2):
     return (x1 - x2)**2
 
-dir_ret_parameters = { "distance": quadratic_distance, 
+dir_ret_parameters = { "loss": quadratic_distance, 
                        "adaptation": w_adaptation}
 
 dir_ret = DirectingRetrieval(dir_ret_parameters)
