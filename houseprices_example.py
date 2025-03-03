@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 from numericalCBR.adaptation import WeightedAdaptation
 from numericalCBR.numerical_case import NumericalCase, NumericalCaseBase
+from numericalCBR.retrieval import WeightedDistanceRetrieval, LearnableWeightedDistanceRetrieval
 
 from TACBR.known_adaptation.known_target_solution import DirectingRetrieval
 
@@ -26,7 +27,7 @@ X = scaler.fit_transform(X)
 y = y.to_numpy()
 
 # Split data (80% train, 20% test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.02, random_state=42)
 
 N = 100
 
@@ -69,3 +70,19 @@ y_tgt = np.array([y_test[0]])
 
 
 case_ret = dir_ret.retrieve(NumericalCase(x_tgt, y_tgt), CB_list, 2)
+
+
+
+# LearnableWeightedDistanceRetrieval
+
+parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adaptation}
+retrieval = LearnableWeightedDistanceRetrieval(parameters)
+
+CB_test = NumericalCaseBase.from_numpy(X_test, y_test)
+fit_params = {'bounds': (0, 1), 'K': 2}
+
+retrieval.fit(CB, CB_test, quadratic_distance, fit_params)
+
+
+
+

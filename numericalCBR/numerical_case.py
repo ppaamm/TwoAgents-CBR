@@ -1,5 +1,5 @@
 from CBR.CaseBase import Case, CaseBase
-from typing import Set, Tuple
+from typing import Set, Tuple, List
 import numpy as np
 
 class NumericalCase(Case):
@@ -34,6 +34,9 @@ class NumericalCaseBase(CaseBase):
 
     def get_all_cases(self) -> Set[NumericalCase]:
         return super().get_all_cases()
+    
+    def get_all_cases_as_list(self) -> List[NumericalCase]:
+        return super().get_all_cases_as_list()
     
     
     @classmethod
