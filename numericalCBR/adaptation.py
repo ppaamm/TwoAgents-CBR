@@ -17,9 +17,7 @@ class WeightedAdaptation(Adaptation):
     
     def adapt(self, cases: List[NumericalCase], problem: np.ndarray) -> str:
         weight = self.parameters['weight']
-        delta_problem = [np.abs(case.problem - problem) for case in cases]
-        distances = np.array([weight @ delta for delta in delta_problem])
-        barycenter_coefficients = np.exp(- distances)
+        barycenter_coefficients = [np.exp(- weight @ np.abs(case.problem - problem)) for case in cases]
         
         weighted_sum = sum(barycenter_coefficients[i] * cases[i].solution for i in range(len(barycenter_coefficients)))
         return weighted_sum / np.sum(barycenter_coefficients)
