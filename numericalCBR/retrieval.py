@@ -50,6 +50,7 @@ class LearnableWeightedDistanceRetrieval(LearnableParametricRetrieval):
                 
                 total_loss += loss(self.adaptation.adapt(retrieved_cases, case.problem), case.solution)
             return - total_loss
-                
-        best_position, best_score = pso(objective_function, dim, bounds)
+        
+        args = fit_params["pso_params"] if "pso_params" in fit_params else {}
+        best_position, best_score = pso(objective_function, dim, bounds, **args)
         self.optimal_parameter = best_position

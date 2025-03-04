@@ -79,7 +79,7 @@ parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adapta
 retrieval = LearnableWeightedDistanceRetrieval(parameters)
 
 CB_test = NumericalCaseBase.from_numpy(X_test, y_test)
-fit_params = {'bounds': (0, 1), 'K': 2}
+fit_params = {'bounds': (0, 1), 'K': 2, 'pso_params': { 'max_iter': 10 } }
 
 retrieval.fit(CB, CB_test, quadratic_distance, fit_params)
 
