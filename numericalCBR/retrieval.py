@@ -17,9 +17,23 @@ class WeightedDistanceRetrieval(Retrieval):
         
         CB_list = CB.get_all_cases_as_list()
         
-        distances = [np.sqrt(np.dot((case.problem-target_problem) * ret_parameter, case.problem-target_problem))
-                     for case in CB_list]
-        return [CB_list[i] for i in np.argsort(distances)[:K]]
+        # squared_distances = [np.dot((case.problem-target_problem) * ret_parameter, case.problem-target_problem)
+        #              for case in CB_list]
+        # return [CB_list[i] for i in np.argsort(squared_distances)[:K]]
+        problems = np.array([case.problem for case in CB_list])  # Shape: (N, d)
+    
+        diffs = problems - target_problem  # Shape: (N, d)
+        weighted_diffs = diffs * ret_parameter  # Apply weights element-wise
+        squared_distances = np.sum(weighted_diffs * diffs, axis=1)  # Compute squared distances
+        
+        # Get indices of K smallest distances
+        closest_indices = np.argpartition(squared_distances, K)[:K] 
+        
+        # Return the K closest cases
+        return [CB_list[i] for i in closest_indices]
+    
+    
+    
     
     
     
