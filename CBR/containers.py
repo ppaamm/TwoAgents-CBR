@@ -23,5 +23,6 @@ class Adaptation(ABC):
     def adapt(self, cases: List[Case], problem: Any) -> Any:
         pass
     
-    def adapt_multiple(self, cases: List[Case], problems: List[Any]) -> List[Any]:
-        return [self.adapt(cases, problem) for problem in problems]
+    def adapt_multiple(self, cases: List[List[Case]], problems: List[Any]) -> List[Any]:
+        assert len(cases) == len(problems), "There must be the same number of cases and solutions"
+        return [self.adapt(cases[i], problems[i]) for i in range(len(problems))]

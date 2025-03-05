@@ -80,14 +80,16 @@ class LearnableWeightedDistanceRetrieval(LearnableParametricRetrieval):
         
         def objective_function(w):
             CB_test_list = list(CB_test.get_all_cases())
+            problems = [case.problem for case in CB_test_list]
+            solutions = [case.solution for case in CB_test_list]
             
             total_loss = 0
-            problems = [case.problem for case in CB_test_list]
+            
             retrieved_cases = self.parameters['retrieval'].retrieve_multiple(problems, CB, fit_params['K'], w)
             
-            for i in range(len(CB_test_list)):
-                case = CB_test_list[i]
-                total_loss += loss(self.adaptation.adapt(retrieved_cases[i], case.problem), case.solution)
+            adaptation_solutions = self.adaptation.adapt_multiple(retrieved_cases, problems)
+            for i in range(len(solutions)):
+                total_loss += loss(adaptation_solutions[i], solutions[i])
             return - total_loss[0]
         
         args = fit_params["optimization_params"] if "optimization_params" in fit_params else {}

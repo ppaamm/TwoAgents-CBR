@@ -81,7 +81,7 @@ retrieval = LearnableWeightedDistanceRetrieval(parameters)
 CB_test = NumericalCaseBase.from_numpy(X_test, y_test)
 fit_params = {'bounds': (0, 1), 'K': 2, 
               #'optimization_params': { 'max_iter': 10, 'num_particles': 10 } }
-              'optimization_params': { 'num_samples': 10, 'n_verbose': 100 } }
+              'optimization_params': { 'num_samples': 2, 'n_verbose': 100 } }
 
 retrieval.fit(CB, CB_test, quadratic_distance, fit_params)
 
