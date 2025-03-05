@@ -33,8 +33,26 @@ class WeightedDistanceRetrieval(Retrieval):
         return [CB_list[i] for i in closest_indices]
     
     
+    def retrieve_multiple(self, target_problems: List[np.ndarray], CB: NumericalCaseBase, 
+                 K: int, ret_parameter: np.ndarray) -> List[NumericalCase]:
+        
+        CB_list = CB.get_all_cases_as_list()
+        
+        problems = np.array([case.problem for case in CB_list])  # (N, d)
     
+        # Convert target_problems into a NumPy array of shape (M, d)
+        target_problems = np.array(target_problems)  # (M, d)
     
+        weighted_problems = problems * ret_parameter  # (N, d)
+        weighted_targets = target_problems * ret_parameter  # (M, d)
+        diffs = weighted_problems[None, :, :] - weighted_targets[:, None, :]  # Shape: (M, N, d)
+        squared_distances = np.sum(diffs ** 2, axis=2)  # Sum across dimensions -> (M, N)
+    
+        # Get indices of K smallest distances for each target problem
+        closest_indices = np.argpartition(squared_distances, K, axis=1)[:, :K]  # (M, K)
+    
+        # Retrieve the K closest cases for each target problem
+        return [[CB_list[i] for i in row] for row in closest_indices]
     
     
     
@@ -61,11 +79,15 @@ class LearnableWeightedDistanceRetrieval(LearnableParametricRetrieval):
         bounds = [fit_params['bounds']] * dim 
         
         def objective_function(w):
+            CB_test_list = list(CB_test.get_all_cases())
+            
             total_loss = 0
-            for case in CB_test.get_all_cases():
-                retrieved_cases = self.parameters['retrieval'].retrieve(case.problem, CB, fit_params['K'], w)
-                
-                total_loss += loss(self.adaptation.adapt(retrieved_cases, case.problem), case.solution)
+            problems = [case.problem for case in CB_test_list]
+            retrieved_cases = self.parameters['retrieval'].retrieve_multiple(problems, CB, fit_params['K'], w)
+            
+            for i in range(len(CB_test_list)):
+                case = CB_test_list[i]
+                total_loss += loss(self.adaptation.adapt(retrieved_cases[i], case.problem), case.solution)
             return - total_loss[0]
         
         args = fit_params["optimization_params"] if "optimization_params" in fit_params else {}

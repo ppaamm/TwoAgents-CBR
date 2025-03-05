@@ -58,7 +58,7 @@ def pso(opt_function, dim, bounds, num_particles=30, max_iter=20, w=0.5, c1=1.5,
 
 
 
-def grid_optimization(opt_function, dim, bounds, num_samples=30):
+def grid_optimization(opt_function, dim, bounds, num_samples=30, n_verbose=None):
     """ Minimization of a function using grid search strategy """
     # Create grid points for each dimension
     grid_axes = [np.linspace(low, high, num_samples) for low, high in bounds]
@@ -68,10 +68,16 @@ def grid_optimization(opt_function, dim, bounds, num_samples=30):
     best_point = None
     best_value = -float("inf")  # Assuming minimization; use -inf for maximization
     
+    max_iter = np.prod([num_samples] * dim)
+    print(n_verbose)
+    if n_verbose is None: n_verbose = max_iter+1
+    
     # Evaluate function on grid
-    for point in grid_points:
+    for i, point in enumerate(grid_points):
+        if i % n_verbose == 0:
+            print(f"Iteration {i}/{max_iter}, Best Score: {best_value:.4f}")
         value = opt_function(np.array(point))
-        print(point, value)
+        #print(point, value)
         if value > best_value:  # Change to `>` for maximization
             best_value = value
             best_point = np.array(point)
