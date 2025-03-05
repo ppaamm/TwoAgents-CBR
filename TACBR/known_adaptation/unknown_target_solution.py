@@ -26,7 +26,9 @@ class LearnableParametricRetrieval(Retrieval,ABC):
         
         
     def retrieve(self, target_problem: Any, CB: CaseBase, K = 1) -> List[Case]:
-        assert self.optimal_parameter != None, "The retrieval method must be trained before use"
+        #assert self.optimal_parameter != None, "The retrieval method must be trained before use"
+        if self.optimal_parameter is None: 
+            raise ValueError("The retrieval method must be trained before use. Please call fit() before retrieve().")
         return self.retrieval.retrieve(target_problem, CB, K=K, ret_parameter=self.optimal_parameter)
             
     

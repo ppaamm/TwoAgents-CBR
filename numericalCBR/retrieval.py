@@ -1,7 +1,7 @@
 from . numerical_case import NumericalCase, NumericalCaseBase
 from CBR.containers import Adaptation, Retrieval
 from TACBR.known_adaptation.unknown_target_solution import LearnableParametricRetrieval
-from TACBR.known_adaptation.utils import pso
+from TACBR.known_adaptation.utils import pso, grid_optimization
 from typing import List, Any, Dict, Callable
 import numpy as np
     
@@ -30,6 +30,9 @@ class LearnableWeightedDistanceRetrieval(LearnableParametricRetrieval):
     def __init__(self, parameters: Dict[str, Any]):
         assert "retrieval" in parameters, "'retrieval' key must be present in parameters"
         assert isinstance(parameters["retrieval"], WeightedDistanceRetrieval), "'retrieval' must be of type WeightedDistanceRetrieval"
+        if not("optimization_method" in parameters):
+            parameters["optimization_method"] = "grid"
+            print("No optimization method specified => using default (grid)")
         super().__init__(parameters)
     
     def fit(self, CB: NumericalCase, CB_test: NumericalCase, 
@@ -49,8 +52,11 @@ class LearnableWeightedDistanceRetrieval(LearnableParametricRetrieval):
                 retrieved_cases = self.parameters['retrieval'].retrieve(case.problem, CB, fit_params['K'], w)
                 
                 total_loss += loss(self.adaptation.adapt(retrieved_cases, case.problem), case.solution)
-            return - total_loss
+            return - total_loss[0]
         
-        args = fit_params["pso_params"] if "pso_params" in fit_params else {}
-        best_position, best_score = pso(objective_function, dim, bounds, **args)
+        args = fit_params["optimization_params"] if "optimization_params" in fit_params else {}
+        if self.parameters["optimization_method"] == "pso":
+            best_position, best_score = pso(objective_function, dim, bounds, **args)
+        elif self.parameters["optimization_method"] == "grid":
+            best_position, best_score = grid_optimization(objective_function, dim, bounds, **args)
         self.optimal_parameter = best_position

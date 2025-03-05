@@ -1,4 +1,6 @@
 import numpy as np
+from itertools import product
+from multiprocessing import Pool, cpu_count
 
 class Particle:
     def __init__(self, dim, bounds):
@@ -49,10 +51,36 @@ def pso(opt_function, dim, bounds, num_particles=30, max_iter=20, w=0.5, c1=1.5,
             particle.position = np.clip(particle.position, bounds[:, 0], bounds[:, 1])
 
         # Print progress
-        #print(f"Iteration {iteration+1}/{max_iter}, Best Score: {global_best_score:.4f}")
-        print(global_best_score)
+        print(f"Iteration {iteration+1}/{max_iter}, Best Score: {global_best_score:.4f}")
+        #print(global_best_score)
 
     return global_best_position, global_best_score
+
+
+
+def grid_optimization(opt_function, dim, bounds, num_samples=30):
+    """ Minimization of a function using grid search strategy """
+    # Create grid points for each dimension
+    grid_axes = [np.linspace(low, high, num_samples) for low, high in bounds]
+    grid_points = product(*grid_axes)  # Cartesian product of grid axes
+    #print(list(grid_points))
+    
+    best_point = None
+    best_value = -float("inf")  # Assuming minimization; use -inf for maximization
+    
+    # Evaluate function on grid
+    for point in grid_points:
+        value = opt_function(np.array(point))
+        print(point, value)
+        if value > best_value:  # Change to `>` for maximization
+            best_value = value
+            best_point = np.array(point)
+    
+    return best_point, best_value
+
+    
+
+
 
 # Example usage
 if __name__ == "__main__":
@@ -64,6 +92,12 @@ if __name__ == "__main__":
     bounds = [(-10, 10), (-10, 10)]  # Search space bounds for each dimension
 
     best_position, best_score = pso(objective_function, dim, bounds)
-    print("\nOptimal Solution Found:")
+    print("\nOptimal Solution Found by PSO:")
     print("Best Position:", best_position)
     print("Best Score:", best_score)
+    
+    best_position, best_score = grid_optimization(objective_function, dim, bounds, num_samples=5)
+    print("\nOptimal Solution Found by grid search:")
+    print("Best Position:", best_position)
+    print("Best Score:", best_score)
+    

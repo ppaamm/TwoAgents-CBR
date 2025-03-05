@@ -27,7 +27,7 @@ X = scaler.fit_transform(X)
 y = y.to_numpy()
 
 # Split data (80% train, 20% test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.02, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 N = 100
 
@@ -75,11 +75,13 @@ case_ret = dir_ret.retrieve(NumericalCase(x_tgt, y_tgt), CB_list, 2)
 
 # LearnableWeightedDistanceRetrieval
 
-parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adaptation}
+parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adaptation, 'optimization_method': 'grid',}
 retrieval = LearnableWeightedDistanceRetrieval(parameters)
 
 CB_test = NumericalCaseBase.from_numpy(X_test, y_test)
-fit_params = {'bounds': (0, 1), 'K': 2, 'pso_params': { 'max_iter': 10 } }
+fit_params = {'bounds': (0, 1), 'K': 2, 
+              #'optimization_params': { 'max_iter': 10, 'num_particles': 10 } }
+              'optimization_params': { 'num_samples': 3 } }
 
 retrieval.fit(CB, CB_test, quadratic_distance, fit_params)
 
