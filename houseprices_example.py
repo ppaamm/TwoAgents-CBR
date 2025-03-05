@@ -24,6 +24,9 @@ y = df["Price"]
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
+# Use only two dimensions:
+X = X[:,:2]
+
 y = y.to_numpy()
 
 # Split data (80% train, 20% test)
@@ -43,7 +46,8 @@ y_train = y_train[:N]
 
 
 # Defining the adaptation method
-weight = np.array([1., .8, 1.2, .9, .7, .7, .2, .2])
+#weight = np.array([1., 0, 0, 0, 0, 0, 0, 0])
+weight = np.array([1., 0])
 w_adaptation = WeightedAdaptation({"weight": weight})
 
 
@@ -75,13 +79,16 @@ case_ret = dir_ret.retrieve(NumericalCase(x_tgt, y_tgt), CB_list, 2)
 
 # LearnableWeightedDistanceRetrieval
 
-parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adaptation, 'optimization_method': 'grid',}
+parameters = {'retrieval': WeightedDistanceRetrieval({}), 'adaptation': w_adaptation, 
+              #'optimization_method': 'grid',}
+              'optimization_method': 'pso',}
 retrieval = LearnableWeightedDistanceRetrieval(parameters)
 
 CB_test = NumericalCaseBase.from_numpy(X_test, y_test)
 fit_params = {'bounds': (0, 1), 'K': 2, 
-              #'optimization_params': { 'max_iter': 10, 'num_particles': 10 } }
-              'optimization_params': { 'num_samples': 2, 'n_verbose': 100 } }
+              'optimization_params': { 'max_iter': 50, 'num_particles': 30, 
+                                      'w': 0.8, 'c1': 5, 'c2': 1 } }
+              #'optimization_params': { 'num_samples': 2, 'n_verbose': 100 } }
 
 retrieval.fit(CB, CB_test, quadratic_distance, fit_params)
 

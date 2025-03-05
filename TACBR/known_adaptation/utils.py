@@ -10,7 +10,7 @@ class Particle:
         self.best_position = np.copy(self.position)
         self.best_score = -np.inf  # For maximization problems
 
-def pso(opt_function, dim, bounds, num_particles=30, max_iter=20, w=0.5, c1=1.5, c2=1.5):
+def pso(opt_function, dim, bounds, num_particles=30, max_iter=20, w=0.5, c1=1, c2=3):
     """Particle Swarm Optimization (PSO) algorithm"""
     
     # Initialize swarm
@@ -52,6 +52,7 @@ def pso(opt_function, dim, bounds, num_particles=30, max_iter=20, w=0.5, c1=1.5,
 
         # Print progress
         print(f"Iteration {iteration+1}/{max_iter}, Best Score: {global_best_score:.4f}")
+        print("Best Position:", global_best_position)
         #print(global_best_score)
 
     return global_best_position, global_best_score
