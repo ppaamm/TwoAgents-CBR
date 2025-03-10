@@ -1,5 +1,6 @@
 from CBR.containers import Adaptation, Retrieval
-from typing import Any, Dict, List, Tuple
+from CBR.CaseBase import CaseBase, Case
+from typing import Any, Dict, List, Tuple, Optional
 from abc import ABC, abstractmethod
 import copy
 
@@ -41,6 +42,15 @@ class FiniteAdaptationProbability:
             ad = self.adaptation_probabilities[i][0]
             new_proba = self.adaptation_probabilities[i][1] / Z
             self.adaptation_probabilities[i] = (ad, new_proba)
+            
+    def __len__(self):
+        return len(self.adaptation_probabilities)
+    
+    def __getitem__(self, index):
+        return self.adaptation_probabilities[index]
+    
+    def __setitem__(self, index, value):
+        self.adaptation_probabilities[index] = value
         
         
 
@@ -51,7 +61,7 @@ class ProbabilitisticSampledAdaptations:
         self.sampled_adaptations = sampled_adaptations
 
 
-class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
+class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval):
     def __init__(self, parameters: Dict[str, Any]):
         super().__init__(parameters)
         assert isinstance(parameters["adaptation_probability"], FiniteAdaptationProbability)
@@ -64,6 +74,11 @@ class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
         posterior.normalize()
         self.adaptation_probability = posterior
         
+    # TODO: Create children classes using several retrieval methods
+    def retrieve(self, target_problem: Any, CB: CaseBase, K: Optional[int] = None) -> List[Case]:
+        return None
+        
+
 
 class UnknownSampledAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
     def __init__(self, parameters: Dict[str, Any]):
