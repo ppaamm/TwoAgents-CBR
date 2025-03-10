@@ -1,6 +1,7 @@
 from CBR.containers import Adaptation, Retrieval
 from typing import Any, Dict, List, Tuple
 from abc import ABC, abstractmethod
+import copy
 
 
 class UnknownAdaptationRetrieval(Retrieval, ABC):
@@ -11,7 +12,7 @@ class UnknownAdaptationRetrieval(Retrieval, ABC):
         super().__init__(parameters)
         
     @abstractmethod
-    def update_adaptation_probability(self, observations: List[Tuple[Any,Any,List[Any]]]):
+    def update_adaptation_probability(self, observations: List[Tuple[Any,Any,List[Any]]], *args, **kwargs):
         """
         Updates the adaptation probability (inference)
 
@@ -30,6 +31,18 @@ class FiniteAdaptationProbability:
         assert sum([proba for _, proba in adaptation_probabilities]) == 1, "Probabilities must sum to 1"
         self.adaptation_probabilities = adaptation_probabilities
 
+    def deep_copy(self):
+        """Returns a deep copy of the object"""
+        return copy.deepcopy(self)
+    
+    def normalize(self):
+        Z = sum([proba for _, proba in self.adaptation_probabilities])
+        for i in range(len(self.adaptation_probabilities)):
+            ad = self.adaptation_probabilities[i][0]
+            new_proba = self.adaptation_probabilities[i][1] / Z
+            self.adaptation_probabilities[i] = (ad, new_proba)
+        
+        
 
 class ProbabilitisticSampledAdaptations:
     def __init__(self, sampled_adaptations: List[Adaptation]):
@@ -42,6 +55,14 @@ class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
     def __init__(self, parameters: Dict[str, Any]):
         super().__init__(parameters)
         assert isinstance(parameters["adaptation_probability"], FiniteAdaptationProbability)
+        
+    def update_adaptation_probability(self, observations: List[Tuple[Any,Any,List[Any]]], likelihood):
+        posterior = self.adaptation_probability.deep_copy()
+        for i in range(len(posterior)):
+            unnormalized_posterior_i = posterior[i][1] * likelihood(observations, posterior[i][0])
+            posterior[i] = (posterior[i][0], unnormalized_posterior_i)
+        posterior.normalize()
+        self.adaptation_probability = posterior
         
 
 class UnknownSampledAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
