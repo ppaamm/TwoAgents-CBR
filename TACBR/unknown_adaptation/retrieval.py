@@ -61,7 +61,7 @@ class ProbabilitisticSampledAdaptations:
         self.sampled_adaptations = sampled_adaptations
 
 
-class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval):
+class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):
     def __init__(self, parameters: Dict[str, Any]):
         super().__init__(parameters)
         assert isinstance(parameters["adaptation_probability"], FiniteAdaptationProbability)
@@ -74,10 +74,7 @@ class UnknownFiniteAdaptationRetrieval(UnknownAdaptationRetrieval):
         posterior.normalize()
         self.adaptation_probability = posterior
         
-    # TODO: Create children classes using several retrieval methods
-    def retrieve(self, target_problem: Any, CB: CaseBase, K: Optional[int] = None) -> List[Case]:
-        return None
-        
+
 
 
 class UnknownSampledAdaptationRetrieval(UnknownAdaptationRetrieval, ABC):

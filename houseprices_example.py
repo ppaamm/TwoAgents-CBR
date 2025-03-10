@@ -11,7 +11,7 @@ from numericalCBR.retrieval import WeightedDistanceRetrieval, LearnableWeightedD
 
 from TACBR.known_adaptation.known_target_solution import DirectingRetrieval
 from TACBR.unknown_adaptation.retrieval import FiniteAdaptationProbability, UnknownFiniteAdaptationRetrieval
-
+from TACBR.unknown_adaptation.known_target_solution import UnknownFiniteAdaptDirectingRetrieval
 
 # Load California housing dataset
 data = fetch_california_housing()
@@ -103,7 +103,7 @@ probabilities = [(WeightedAdaptation({"weight": np.array([1., 0.])}), 0.4),
                  (WeightedAdaptation({"weight": np.array([.5, .5])}), 0.2)]
 prior = FiniteAdaptationProbability(probabilities)
 
-retrieval = UnknownFiniteAdaptationRetrieval({"adaptation_probability": prior})
+retrieval = UnknownFiniteAdaptDirectingRetrieval({"adaptation_probability": prior, "loss": quadratic_distance})
 
 def normal_likelihood(observations, adaptation, sigma2=1e-5):
     N = len(observations)
