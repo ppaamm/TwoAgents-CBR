@@ -26,7 +26,7 @@ class UnknownAdaptationRetrieval(Retrieval, ABC):
 
 
 class FiniteAdaptationProbability:
-    def __init__(self, adaptation_probabilities: List[Adaptation, float]):
+    def __init__(self, adaptation_probabilities: List[Tuple[Adaptation, float]]):
         assert sum([proba for _, proba in adaptation_probabilities]) == 1, "Probabilities must sum to 1"
         self.adaptation_probabilities = adaptation_probabilities
 
