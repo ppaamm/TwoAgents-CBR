@@ -1,4 +1,4 @@
-from typing import Set, Any, List
+from typing import Set, Any, List, Iterator
 import uuid
 
 class Case:
@@ -38,3 +38,7 @@ class CaseBase:
     
     def get_all_cases_as_list(self) -> List[Case]:
         return list(self.cases)
+    
+    def __iter__(self) -> Iterator[Case]:
+        """Allows iteration over cases in the CaseBase."""
+        return iter(self.cases)

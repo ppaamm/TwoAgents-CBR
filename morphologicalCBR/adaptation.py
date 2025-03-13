@@ -48,7 +48,7 @@ class VowelHarmonyAdaptation(Adaptation):
                                 if length == min(length for _, length in top_solutions)]
         
         # TODO: Here too we select the first element randomly... Better solution?
-        return min_length_solutions[0]
+        return min_length_solutions[0] if len(min_length_solutions) > 0 else ""  #TODO: Check why this happens
 
 
 
