@@ -2,7 +2,6 @@
 
 from morphologicalCBR.TextCase import TextCase, TextCaseBase
 from morphologicalCBR.adaptation import VowelHarmonyAdaptation
-from morphologicalCBR.retrieval import MorphologicalRetrieval, problem_distance
 
 from TACBR.known_adaptation.known_target_solution import DirectingRetrieval
 
@@ -10,8 +9,6 @@ from TACBR.known_adaptation.known_target_solution import DirectingRetrieval
 import numpy as np
 from sklearn.model_selection import train_test_split
 import pandas as pd
-import random
-import seaborn as sns
 import time
 import matplotlib.pyplot as plt
 import datetime
@@ -20,10 +17,10 @@ np.random.seed(42)
 
 # PARAMETERS
 
-n_run = 10    # Number of runs
-n_CB = 20   # Size of the case base
+n_run = 20    # Number of runs
+#n_CB = 20   # Size of the case base
 n_test = 50 # Size of the test set
-K_max = 5    # Maximal number of cases to retrieve
+K_max = 4    # Maximal number of cases to retrieve
 
 
 
@@ -54,7 +51,7 @@ def naive_text_distance(t1, t2):
 
 
 
-def run_pipeline(data, K, vowel_harmony):
+def run_pipeline(data, K, vowel_harmony, n_CB):
     df_CB, df_test = train_test_split(data, train_size=n_CB, shuffle=True)
     CB = TextCaseBase.from_dataframe(df_CB)
     df_test = df_test[:n_test]
@@ -86,48 +83,61 @@ results = []
 
 for K in range(K_max):
     for harmony in (False, True):
-        print(f"K = {K}, Harmony = {harmony}")
-        scores = []
-        for n in range(n_run):
-            score = run_pipeline(total_data, K+1, harmony)
-            scores.append(score)
-            
-        results.append({
-            "K": K + 1,
-            "harmony": harmony,
-            "mean_score": np.mean(scores),
-            "std_score": np.std(scores)
-        })
+        for n_CB in (20, 50, 100):
+            print(f"K = {K+1}, Harmony = {harmony}, CB size = {n_CB}")
+            scores = []
+            for n in range(n_run):
+                score = run_pipeline(total_data, K+1, harmony, n_CB)
+                scores.append(score)
+                
+            results.append({
+                "K": K + 1,
+                "harmony": harmony,
+                "n_CB": n_CB,
+                "mean_score": np.mean(scores),
+                "std_score": np.std(scores)
+            })
     
 # Convert to DataFrame
 df_results = pd.DataFrame(results)
 
 # Save to CSV for later use
-df_results.to_csv("results.csv", index=False)
+df_results.to_csv("results-1-1.csv", index=False)
 
 
-plt.figure(figsize=(8, 5))
+n_CB_values = sorted(df["n_CB"].unique())
 
-for harmony_value in [False, True]:
-    subset = df_results[df_results["harmony"] == harmony_value]
-    
-    # Plot mean scores
-    plt.plot(subset["K"], subset["mean_score"], marker="o", label=f"Harmony: {harmony_value}")
-    
-    # Add shaded variance region
-    plt.fill_between(subset["K"], 
-                     subset["mean_score"] - subset["std_score"], 
-                     subset["mean_score"] + subset["std_score"], 
-                     alpha=0.2)
+# Plot settings
+plt.figure(figsize=(12, 5))
 
-# Labels and legend
-plt.xlabel("K")
-plt.ylabel("Mean Score")
-plt.title("Prediction accuracy")
-plt.legend(title="Harmony")
-plt.grid()
+for i, harmony_value in enumerate([False, True], 1):
+    plt.subplot(1, 2, i)  # Create subplot
+    subset = df[df["harmony"] == harmony_value]
+
+    for n_CB in n_CB_values:
+        subset_n_CB = subset[subset["n_CB"] == n_CB].sort_values("K")
+
+        # Plot mean score
+        plt.plot(subset_n_CB["K"], subset_n_CB["mean_score"], marker="o", label=f"{n_CB}")
+
+        # Shaded standard deviation area
+        plt.fill_between(subset_n_CB["K"], 
+                         subset_n_CB["mean_score"] - subset_n_CB["std_score"], 
+                         subset_n_CB["mean_score"] + subset_n_CB["std_score"], 
+                         alpha=0.2)
+
+    # Labels
+    plt.xlabel("K")
+    plt.ylabel("Prediction error")
+    plt.title(f"Prediction error (Harmony={harmony_value})")
+    x_min, x_max = df["K"].min(), df["K"].max()
+    plt.xticks(np.arange(x_min, x_max + 1, 1))  # Show only integer K values
+    plt.grid(axis="x", linestyle="--", alpha=0.6)
+    plt.legend(title="Size of the CB:")
+
+# Show plots
+plt.tight_layout()
 plt.show()
-
 
 
 
