@@ -163,3 +163,60 @@ plt.grid(axis="y", linestyle="--", alpha=0.7)
 
 #plt.show()
 plt.savefig("exp1-2-bar.png", dpi=300, bbox_inches="tight")
+
+
+
+
+
+
+df_results["score"] = df_results["score"] ** 2
+
+
+# Assume df is your dataframe
+df_grouped = df_results.groupby(["K", "n_CB"])["score"].agg(["mean", "std"]).reset_index()
+
+plt.figure(figsize=(8, 6))
+
+# Iterate over unique values of n_CB to plot each as a separate curve
+for n_CB in df_grouped["n_CB"].unique():
+    subset = df_grouped[df_grouped["n_CB"] == n_CB]
+    
+    plt.plot(subset["K"], subset["mean"], marker="o", label=f"{n_CB}")
+    plt.fill_between(subset["K"], subset["mean"] - subset["std"], subset["mean"] + subset["std"], alpha=0.2)
+
+plt.xlabel("K")
+plt.ylabel("MSE")
+plt.legend(title="Size of the CB:")
+plt.grid(True, axis="y", linestyle="--", alpha=0.7)
+plt.xticks(df_grouped["K"].unique())  # Ensure only integer K values are shown
+plt.title("Mean Squared Error")
+
+#plt.show()
+plt.savefig("exp1-2-mse-plot.png", dpi=300, bbox_inches="tight")
+
+
+
+
+# Get unique values for plotting
+Ks = sorted(df_grouped["K"].unique())
+n_CBs = sorted(df_grouped["n_CB"].unique())
+
+bar_width = 0.2  # Adjust bar width
+x = np.arange(len(Ks))  # X positions for bars
+
+plt.figure(figsize=(10, 6))
+
+# Plot bars for each n_CB
+for i, n_CB in enumerate(n_CBs):
+    subset = df_grouped[df_grouped["n_CB"] == n_CB]
+    plt.bar(x + i * bar_width, subset["mean"], width=bar_width, label=f"{n_CB}", yerr=subset["std"], capsize=5)
+
+plt.xticks(x + (len(n_CBs) - 1) * bar_width / 2, Ks)  # Center labels under groups
+plt.xlabel("K")
+plt.ylabel("MSE")
+plt.legend(title="Size of the CB:")
+plt.title("Mean Squared Error")
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+#plt.show()
+plt.savefig("exp1-2-mse-bar.png", dpi=300, bbox_inches="tight")
