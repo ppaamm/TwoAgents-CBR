@@ -102,7 +102,7 @@ for K in range(K_max):
 df_results = pd.DataFrame(results)
 
 # Save to CSV for later use
-df_results.to_csv("results-1-1.csv", index=False)
+df_results.to_csv("results/results-1-1.csv", index=False)
 
 
 n_CB_values = sorted(df["n_CB"].unique())

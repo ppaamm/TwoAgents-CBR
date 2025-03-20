@@ -111,7 +111,7 @@ for K in range(K_max):
 df_results = pd.DataFrame(results)
 
 # Save to CSV for later use
-df_results.to_csv("results-1-2.csv", index=False)
+df_results.to_csv("results/results-1-2.csv", index=False)
 
 
 
@@ -135,7 +135,7 @@ plt.xticks(df_grouped["K"].unique())  # Ensure only integer K values are shown
 plt.title("Prediction error")
 
 #plt.show()
-plt.savefig("exp1-2-plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("results/exp1-2-plot.png", dpi=300, bbox_inches="tight")
 
 
 
@@ -162,7 +162,7 @@ plt.title("Prediction error")
 plt.grid(axis="y", linestyle="--", alpha=0.7)
 
 #plt.show()
-plt.savefig("exp1-2-bar.png", dpi=300, bbox_inches="tight")
+plt.savefig("results/exp1-2-bar.png", dpi=300, bbox_inches="tight")
 
 
 
@@ -192,7 +192,7 @@ plt.xticks(df_grouped["K"].unique())  # Ensure only integer K values are shown
 plt.title("Mean Squared Error")
 
 #plt.show()
-plt.savefig("exp1-2-mse-plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("results/exp1-2-mse-plot.png", dpi=300, bbox_inches="tight")
 
 
 
@@ -219,4 +219,4 @@ plt.title("Mean Squared Error")
 plt.grid(axis="y", linestyle="--", alpha=0.7)
 
 #plt.show()
-plt.savefig("exp1-2-mse-bar.png", dpi=300, bbox_inches="tight")
+plt.savefig("results/exp1-2-mse-bar.png", dpi=300, bbox_inches="tight")
