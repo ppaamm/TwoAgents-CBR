@@ -204,8 +204,8 @@ for i, harmony_value in enumerate([False, True]):
     stds = stats[["scores", "scores_correct", "scores_incorrect"]].applymap(lambda x: x[1])
 
     # Rename columns for plotting
-    means.columns = ["Scores", "Correct Scores", "Incorrect Scores"]
-    stds.columns = ["Scores", "Correct Scores", "Incorrect Scores"]
+    means.columns = ["Our method", "Correct adaptation", "Wrong adaptation"]
+    stds.columns = ["Our method", "Correct adaptation", "Wrong adaptation"]
 
     # Plot bars with error bars
     means.plot(kind="bar", yerr=stds, ax=ax, capsize=4, width=0.8, alpha=0.75)
@@ -213,8 +213,11 @@ for i, harmony_value in enumerate([False, True]):
     ax.set_xticks(range(len(n_CB_values)))
     ax.set_xticklabels(n_CB_values, rotation=0)
     ax.set_title(f"Harmony = {harmony_value}")
-    ax.set_xlabel("n_CB")
-    ax.set_ylabel("Score")
-    ax.legend(["Scores", "Correct Scores", "Incorrect Scores"])
+    ax.set_xlabel("Size of the case base")
+    ax.set_ylabel("Prediction error")
+    if harmony_value:  # Only keep the legend for the right subplot
+        ax.legend(["Our method", "Correct adaptation", "Wrong adaptation"])
+    else:
+        ax.legend().remove()  # Remove legend from the left subplot
 
 plt.savefig("results/exp3-1.png", dpi=300, bbox_inches="tight")
